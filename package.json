@@ -62,7 +62,7 @@
     "promise-polyfill": "^8.1.0",
     "style-loader": "^0.23.1",
     "super-nunjucks-loader": "^2.0.0",
-    "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony",
+    "uglify-js": "github:mishoo/UglifyJS2#harmony",
     "uglifyjs-webpack-plugin": "0.4.6",
     "url-loader": "^1.1.2",
     "webpack": "^4.29.5",
