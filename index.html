@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Moon Rider</title>
-    <meta name="og:title" content="Moon Rider">
-    <meta name="twitter:title" content="Moon Rider">
+    <title>Chessboxing by Immers space</title>
+    <meta name="og:title" content="Chessboxing by Immers space">
+    <meta name="twitter:title" content="Chessboxing by Immers space">
 
     <meta name="description" content="A free and open source VR music visualization website. Surf the musical road among the stars, moon, and lights.">
     <meta name="og:description" content="A free and open source VR music visualization website. Surf the musical road among the stars, moon, and lights.">
@@ -16,6 +16,7 @@
     <link rel="shortcut icon" href="assets/img/favicon.png" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@37b219d2cf43c1f7cbd7ac4fc98e8ce5d914a1f7/dist/aframe-master.min.js"></script>
     <script src="build/build.js?v=3"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/immers-client/dist/destination.bundle.js"></script>
   </head>
   <body>
     <div id="app"></div>
@@ -29,7 +30,7 @@
       gtag('config', 'UA-111391431-16');
     </script>
 
-    <div id="subscribeForm">
+    <div id="subscribeForm" style="display: none;">
       <h2>Get Updates on Our Upcoming VR Projects!</h2>
       <form>
         <input name="email" type="email" placeholder="Email address">
@@ -38,9 +39,16 @@
       <p>Also chat with us on <a href="https://moonrider.xyz/discord">moonrider.xyz/discord</a></p>
       <span id="subscribeClose">&times;</span>
     </div>
-
-    <div id="brokenNotice" style="position: fixed; top: 0; left: 0; right: 0; background: rgba(30, 30, 30, 0.8); padding: 10px">
-      <p style="font-family: monospace; color: #FAFAFA; text-align: center">v2.9: Fixed Vive controller rotation. Looking into Valve Index controller rotation issues. Thanks for playing! Chat with us on moonrider.xyz/discord</p>
-    </div>
+    <!-- TODO: HUD needs support for local immer mode local-immer="scores.chessboxing.space" -->
+    <immers-hud
+      open="true"
+      style="color: white"
+      position="top-left"
+      access-role="modAdditive"
+      token-catcher="https://chessboxing.space"
+      destination-url="https://chessboxing.space"
+      destination-name="Chessboxing by Immers Space"
+      allow-storage>
+    </immers-hud>
   </body>
 </html>

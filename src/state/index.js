@@ -89,6 +89,7 @@ AFRAME.registerState({
     hasVR: AFRAME.utils.device.checkHeadsetConnected() ||
            AFRAME.utils.getUrlParameter('debugvr') === 'true',
     introActive: !SKIP_INTRO,  // Just started game, main menu not opened yet.
+    loggedIn: false, // immers login
     inVR: AFRAME.utils.getUrlParameter('debugvr') === 'true',
     isIOS: AFRAME.utils.device.isIOS(),
     isGameOver: false,  // Game over screen.
@@ -752,6 +753,10 @@ AFRAME.registerState({
     ziploaderstart: state => {
       state.challenge.isBeatsPreloaded = false;
       state.isZipFetching = true;
+    },
+
+    login: state => {
+      state.loggedIn = true;
     }
   },
 

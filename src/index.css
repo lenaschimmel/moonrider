@@ -117,3 +117,16 @@ button {
 button:hover {
   background: #FF94C8;
 }
+
+immers-hud {
+  color: white;
+}
+
+/* not shown until after login */
+#vrButton {
+  display: none;
+}
+
+.immersConnected #vrButton {
+  display: unset;
+}

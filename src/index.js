@@ -31,9 +31,12 @@ require('./index.css');
 
 require('./scene.html');
 
+const { initImmers } = require('./immers');
+
 if (module.hot) { module.hot.accept(); }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initImmers();
   initSubscribeForm();
 });
 
