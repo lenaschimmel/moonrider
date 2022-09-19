@@ -1,5 +1,6 @@
 /* global localStorage */
 import COLORS from '../constants/colors';
+import { postScoreToImmers } from '../immers';
 const utils = require('../utils');
 
 const challengeDataStore = {};
@@ -68,6 +69,10 @@ AFRAME.registerState({
       songName: '',
       songNameShort: '',
       songSubName: ''
+    },
+    chessGame: {
+      returnLink: '',
+      opponent: ''
     },
     colorPrimary: COLORS.schemes[colorScheme].primary,
     colorScheme: colorScheme,
@@ -297,6 +302,7 @@ AFRAME.registerState({
       state.score.score = 9001;
       state.introActive = false;
       computeBeatsText(state);
+      postScoreToImmers(state.score, state.challenge);
     },
 
     difficultyfilter: (state, difficulty) => {
@@ -650,6 +656,7 @@ AFRAME.registerState({
     songcomplete: state => {
       gtag('event', 'songcomplete', {event_label: state.gameMode});
 
+      const lastChallenge = Object.assign({}, state.challenge);
       // Move back to menu in Ride or Viewer Mode.
       if (state.gameMode === 'ride' || !state.inVR) {
         state.challenge.isBeatsPreloaded = false;
@@ -681,6 +688,7 @@ AFRAME.registerState({
       }
 
       computeBeatsText(state);
+      postScoreToImmers(state.score, lastChallenge);
     },
 
     songloadcancel: state => {
@@ -755,8 +763,14 @@ AFRAME.registerState({
       state.isZipFetching = true;
     },
 
+    /// chessboxing reducers //
     login: state => {
       state.loggedIn = true;
+    },
+
+    chessGameState: (state, { returnLink, opponent }) => {
+      state.chessGame.returnLink = returnLink;
+      state.chessGame.opponent = opponent;
     }
   },
 
