@@ -61,7 +61,7 @@ AFRAME.registerState({
       audio: '',  // URL.
       author: '',
       difficulty: '',
-      id: AFRAME.utils.getUrlParameter('challenge'),  // Will be empty string if not playing.
+      id: '',  // Will be empty string if not playing.
       image: '',
       isBeatsPreloaded: false,  // Whether we have passed the negative time.
       numBeats: undefined,
@@ -83,7 +83,7 @@ AFRAME.registerState({
     colorTertiary: COLORS.schemes[colorScheme].tertiary,
     controllerType: '',
     damage: 0,
-    difficultyFilter: 'All',
+    difficultyFilter: AFRAME.utils.getUrlParameter('difficulty') || 'All',
     difficultyFilterMenuOpen: false,
     favorites: favorites,
     gameMode: 'ride',
@@ -740,9 +740,14 @@ AFRAME.registerState({
       }
     },
 
-    startgame: state => {
+    startgame: function (state) {
       state.introActive = false;
       state.menuActive = true;
+      if (AFRAME.utils.getUrlParameter('challenge')) {
+        // preselected challenge in url
+        // this.menuchallengeselect(state, AFRAME.utils.getUrlParameter('challenge'));
+        window.setTimeout(() => AFRAME.scenes[0].emit('menuchallengeselect', AFRAME.utils.getUrlParameter('challenge')), 1000);
+      }
     },
 
     victoryfake: state => {
