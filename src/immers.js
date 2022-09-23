@@ -1,8 +1,6 @@
-// loads and registers immers-hud custom element
-import 'immers-client/dist/ImmersHUD.bundle';
-import { catchToken } from 'immers-client';
+import { catchToken, ImmersHUD } from 'immers-client';
 import DOMPurify from 'dompurify';
-
+ImmersHUD.Register();
 catchToken();
 
 export function initImmers () {
