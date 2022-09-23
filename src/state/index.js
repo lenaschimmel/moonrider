@@ -72,7 +72,8 @@ AFRAME.registerState({
     },
     chessGame: {
       returnLink: '',
-      opponent: ''
+      opponent: '',
+      board: ''
     },
     colorPrimary: COLORS.schemes[colorScheme].primary,
     colorScheme: colorScheme,
@@ -768,9 +769,10 @@ AFRAME.registerState({
       state.loggedIn = true;
     },
 
-    chessGameState: (state, { returnLink, opponent }) => {
+    chessGameState: (state, { returnLink, opponent, board }) => {
       state.chessGame.returnLink = returnLink;
       state.chessGame.opponent = opponent;
+      state.chessGame.board = board;
     }
   },
 

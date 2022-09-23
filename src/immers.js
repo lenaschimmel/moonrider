@@ -1,6 +1,8 @@
 // loads and registers immers-hud custom element
 import 'immers-client/dist/ImmersHUD.bundle';
 import { catchToken } from 'immers-client';
+import DOMPurify from 'dompurify'
+
 catchToken();
 
 export function initImmers () {
@@ -44,7 +46,7 @@ async function findChessMatch (immersClient) {
   let page;
   while (!chessState && (page = await immersClient.activities.outbox())) {
     for (const activity of page.orderedItems) {
-      if (activity.object?.type === 'ChessGameState') { // TODO confirm object type
+      if (activity.object?.type === 'ChessGame') {
         chessState = activity;
         break;
       }
@@ -54,10 +56,15 @@ async function findChessMatch (immersClient) {
     // TODO: set error state
     return;
   }
+  console.log('finished chess state search', chessState);
 
-  const returnLink = chessState.context.url;
-  const opponent = chessState.object.opponent;
-  scene().emit('chessGameState', { returnLink, opponent });
+  const returnLink = chessState.object.context.url;
+  const { black, white } = chessState.object;
+  const opponent = black === immersClient.profile.id ? white : black;
+  const board = chessState.summary;
+  scene().emit('chessGameState', { returnLink, opponent, board });
+  document.getElementById('subscribeForm').style.display = 'block';
+  document.getElementById('chessBoardDisplay').innerHTML = DOMPurify.sanitize(board);
 }
 
 let sceneEl;
