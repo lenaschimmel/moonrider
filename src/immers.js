@@ -1,7 +1,7 @@
 // loads and registers immers-hud custom element
 import 'immers-client/dist/ImmersHUD.bundle';
 import { catchToken } from 'immers-client';
-import DOMPurify from 'dompurify'
+import DOMPurify from 'dompurify';
 
 catchToken();
 
@@ -13,6 +13,8 @@ export function initImmers () {
     scene().emit('login');
     findChessMatch(hud.immersClient);
   }, { once: true });
+  document.querySelector('#loginNotice')
+    .addEventListener('click', () => hud.login());
 }
 
 export function postScoreToImmers (score, challenge) {

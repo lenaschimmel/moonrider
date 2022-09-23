@@ -109,6 +109,7 @@ AFRAME.registerState({
     isVictory: false,  // Victory screen.
     isZipFetching: false,
     leaderboard: [],
+    leaderboardEnabled: false, // disable feature for now, maybe bring back later with immers scores
     leaderboardFetched: false,
     leaderboardQualified: false,
     leaderboardNames: '',
@@ -441,7 +442,7 @@ AFRAME.registerState({
 
     leaderboardqualify: state => {
       if (!state.has6DOFVR) { return; }
-      state.leaderboardQualified = true;
+      state.leaderboardQualified = state.leaderboardEnabled;
     },
 
     /**

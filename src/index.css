@@ -14,6 +14,11 @@ html {
   z-index: 9999999;
   width: 84px;
   height: 47px;
+  visibility: hidden;
+}
+
+.immersConnected #vrButton {
+  visibility: visible;
 }
 
 #vrButton.a-hidden {
