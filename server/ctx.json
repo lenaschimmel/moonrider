@@ -1,0 +1,26 @@
+{
+  "@context": {
+    "cbs": "https://chessboxing.space/ns/v1#",
+    "Score": "cbs:Score",
+    "points": {
+      "@id": "cbs:points",
+      "@type": "@id"
+    },
+    "rank": {
+      "@id": "cbs:rank",
+      "@type": "@id"
+    },
+    "difficulty": {
+      "@id": "cbs:difficulty",
+      "@type": "@id"
+    },
+    "songId": {
+      "@id": "cbs:songId",
+      "@type": "@id"
+    },
+    "song": {
+      "@id": "cbs:song",
+      "@type": "@id"
+    }
+  }
+}
