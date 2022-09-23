@@ -70,6 +70,7 @@ AFRAME.registerState({
       songNameShort: '',
       songSubName: ''
     },
+    chessboxingMode: false,
     chessGame: {
       returnLink: '',
       opponent: '',
@@ -773,6 +774,10 @@ AFRAME.registerState({
       state.chessGame.returnLink = returnLink;
       state.chessGame.opponent = opponent;
       state.chessGame.board = board;
+    },
+
+    returntochess: state => {
+      window.location.href = state.chessGame.returnLink;
     }
   },
 
@@ -802,6 +807,8 @@ AFRAME.registerState({
       state.gameMode !== 'ride' &&
       state.inVR &&
       (state.isPlaying || state.isPaused);
+
+    state.chessboxingMode = !!state.chessGame.returnLink;
   }
 });
 
