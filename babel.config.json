@@ -8,8 +8,7 @@
       "useBuiltIns": "usage",
       "corejs": "3.17",
       "shippedProposals": true,
-      "modules": false,
-      "debug": true
+      "modules": false
     }
   ]]
 }
