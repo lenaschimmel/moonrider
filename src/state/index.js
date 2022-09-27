@@ -783,7 +783,9 @@ AFRAME.registerState({
     },
 
     returntochess: state => {
-      window.location.href = state.chessGame.returnLink;
+      AFRAME.scenes[0].exitVR()
+        .catch(e => console.warn(e))
+        .finally(() => (window.location.href = state.chessGame.returnLink));
     }
   },
 
