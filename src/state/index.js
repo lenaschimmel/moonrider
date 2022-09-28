@@ -743,6 +743,10 @@ AFRAME.registerState({
     startgame: function (state) {
       state.introActive = false;
       state.menuActive = true;
+      if (AFRAME.scenes[0].checkHeadsetConnected()) {
+        // enter VR when click "BEGIN" if available
+        AFRAME.scenes[0].enterVR();
+      }
       if (AFRAME.utils.getUrlParameter('challenge')) {
         // preselected challenge in url
         // this.menuchallengeselect(state, AFRAME.utils.getUrlParameter('challenge'));
