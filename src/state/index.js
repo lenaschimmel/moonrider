@@ -305,7 +305,11 @@ AFRAME.registerState({
       state.score.score = 9001;
       state.introActive = false;
       computeBeatsText(state);
-      postScoreToImmers(state.score, state.challenge);
+      try {
+        postScoreToImmers(state.score, state.challenge);
+      } catch (e) {
+        console.error(e);
+      }
     },
 
     difficultyfilter: (state, difficulty) => {
