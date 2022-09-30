@@ -315,15 +315,10 @@ AFRAME.registerComponent('super-keyboard', {
       keyColorPlane.getObject3D('mesh').material.color.copy(color);
       // UVs.
 
-      var geometry = keyColorPlane.getObject3D('mesh').geometry
-      var uvSet = geometry.faceVertexUvs[0];
+      var geometry = keyColorPlane.getObject3D('mesh').geometry;
       var kdataY = 1 - kdata.y;
-      uvSet[0][0].set(kdata.x, kdataY);
-      uvSet[0][1].set(kdata.x, kdataY - kdata.h);
-      uvSet[0][2].set(kdata.x + kdata.w, kdataY);
-      uvSet[1][0].set(kdata.x, kdataY - kdata.h);
-      uvSet[1][1].set(kdata.x + kdata.w, kdataY - kdata.h);
-      uvSet[1][2].set(kdata.x + kdata.w, kdataY);
+      var float32Array = new Float32Array([kdata.x, kdataY, kdata.x + kdata.w, kdataY, kdata.x, kdataY - kdata.h, kdata.x + kdata.w, kdataY - kdata.h]);
+      geometry.setAttribute('uv', new THREE.BufferAttribute(float32Array, 2));
       geometry.uvsNeedUpdate = true;
       break;
     }
