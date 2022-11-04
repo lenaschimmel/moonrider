@@ -878,6 +878,12 @@ function formatSongLength (songLength) {
   return `${minutes}:${seconds}`;
 }
 
+function formatBps (bps) {
+  bps = Math.round(bps * 10) / 10;
+  return `${bps}`;
+}
+
+
 function computeBeatsText (state) {
   state.score.beatsText =
     `${state.score.beatsHit} / ${state.score.beatsMissed + state.score.beatsHit} BEATS`;
@@ -892,7 +898,7 @@ function clearLeaderboard (state) {
 }
 
 function updateMenuSongInfo (state, challenge) {
-  state.menuSelectedChallenge.songInfoText = `By ${truncate(challenge.author, SONG_SUB_NAME_DETAIL_TRUNCATE)}\n${challenge.genre && challenge.genre !== 'Uncategorized' ? challenge.genre + '\n' : ''}${formatSongLength(challenge.songDuration)} / ${challenge.numBeats[state.menuSelectedChallenge.difficulty]} beats`;
+  state.menuSelectedChallenge.songInfoText = `By ${truncate(challenge.author, SONG_SUB_NAME_DETAIL_TRUNCATE)}\n${challenge.genre && challenge.genre !== 'Uncategorized' ? challenge.genre + '\n' : ''}${formatSongLength(challenge.songDuration)} / ${challenge.numBeats[state.menuSelectedChallenge.difficulty]} beats / ${formatBps(challenge.numBeats[state.menuSelectedChallenge.difficulty] / challenge.songDuration)}bps`;
 }
 
 function updateScoreAccuracy (state) {

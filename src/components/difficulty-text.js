@@ -24,11 +24,11 @@ AFRAME.registerComponent('difficulty-text', {
         break;
       }
       case 'Expert': {
-        text = 'SUPER';
+        text = 'EXPERT';
         break;
       }
       case 'Expertplus': {
-        text = 'SUPERNOVA';
+        text = 'EXPERT +';
         break;
       }
       default: {
