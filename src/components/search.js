@@ -1,5 +1,4 @@
 const algoliasearch = require('algoliasearch/lite');
-const BeastSaber = require('beastsaber-api/lib/BeastSaber');
 const { map } = require('lodash');
 const debounce = require('lodash.debounce');
 
@@ -8,10 +7,6 @@ const beatsaver = new BeatSaverAPI({
   AppName: 'Lenas moonrider',
   Version: '0.1.0'
 });
-
-const client = algoliasearch('QULTOY3ZWU', 'be07164192471df7e97e6fa70c1d041d');
-const algolia = client.initIndex('beatsaver');
-const bsaber = new BeastSaber("localhost:9009");
 
 const topSearch = require('../lib/search.json');
 
