@@ -2,7 +2,7 @@ import utils from '../utils';
 
 AFRAME.registerComponent('menu-selected-challenge-image', {
   schema: {
-    selectedChallengeId: {type: 'string'}
+    selectedChallenge: {type: 'string'}
   },
 
   update: function () {

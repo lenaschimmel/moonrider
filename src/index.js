@@ -112,6 +112,6 @@ function initSubscribeForm () {
 }
 
 // Redirect to HTTPS in production.
-if (window.location.protocol === 'http:' && !window.location.host.startsWith('localhost')) {
-  window.location.replace(`https:${location.href.substring(location.protocol.length)}`);
-}
+// if (window.location.protocol === 'http:' && !window.location.host.startsWith('localhost')) {
+//   window.location.replace(`https:${location.href.substring(location.protocol.length)}`);
+// }
