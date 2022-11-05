@@ -155,7 +155,8 @@ AFRAME.registerState({
       queryText: '',
       results: [],
       songNameTexts: '',  // All names in search results merged together.
-      songSubNameTexts: ''  // All sub names in search results merged together.
+      songSubNameTexts: '',  // All sub names in search results merged together.
+      songScoreTexts: ''  // All scores in search results merged together.
     },
     searchResultsPage: [],
     speed: 10
@@ -544,6 +545,12 @@ AFRAME.registerState({
       state.optionsMenuOpen = true;
     },
 
+    exitvr: state => {
+      //location.reload();
+      var scene = document.querySelector('a-scene');
+      scene.exitVR();
+    },
+
     pausegame: state => {
       if (!state.isPlaying) { return; }
       state.isPaused = true;
@@ -793,6 +800,7 @@ function computeSearchPagination (state) {
 
   state.search.songNameTexts = '';
   state.search.songSubNameTexts = '';
+  state.search.songScoreTexts = '';
 
   state.searchResultsPage.length = 0;
   state.searchResultsPage.__dirty = true;
@@ -807,6 +815,26 @@ function computeSearchPagination (state) {
     state.search.songSubNameTexts +=
       truncate(result.songSubName !== 'Unknown Artist' ? result.songSubName : result.author,
                SONG_SUB_NAME_RESULT_TRUNCATE) + '\n';
+
+    let score = null;
+    let count = 0;
+    if (result.stats) {
+      score = result.stats.score;
+      count = result.stats.downvotes + result.stats.upvotes;
+    } else if (result.upvotes + result.downvotes) {
+      count = result.downvotes + result.upvotes;
+      score = result.upvotes / count;
+    }
+
+    if (score === null) {
+      state.search.songScoreTexts += "\n";
+    } else {
+      if (count < 10) {
+        state.search.songScoreTexts += "(" + Math.round(score * 100) + "%)\n";
+      } else {
+        state.search.songScoreTexts += Math.round(score * 100) + "%\n";
+      }
+    }
   }
 
   for (let i = 0; i < state.searchResultsPage.length; i++) {
