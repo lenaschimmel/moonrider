@@ -27,8 +27,8 @@ AFRAME.registerComponent('difficulty-text', {
         text = 'EXPERT';
         break;
       }
-      case 'Expertplus': {
-        text = 'EXPERT +';
+      case 'ExpertPlus': {
+        text = 'EXPERT PLUS';
         break;
       }
       default: {

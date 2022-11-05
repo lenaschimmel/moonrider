@@ -36,6 +36,7 @@
     "aframe-event-set-component": "^4.2.1",
     "aframe-geometry-merger-component": "^2.0.0-beta1",
     "aframe-haptics-component": "^1.6.3",
+    "aframe-layout-component": "file:///Users/lena/src/superframe/components/layout",
     "aframe-log-component": "^1.0.7",
     "aframe-orbit-controls": "^1.2.0",
     "aframe-proxy-event-component": "^2.1.0",
@@ -45,12 +46,12 @@
     "aframe-super-hot-html-loader": "^1.2.0",
     "aframe-super-hot-loader": "^1.5.0",
     "aframe-thumb-controls-component": "^2.0.2",
-    "aframe-layout-component": "file:///Users/lena/src/superframe/components/layout",
     "algoliasearch": "^3.29.0",
     "ansi-html": "0.0.7",
     "autoprefixer": "^7.2.3",
     "babel-loader": "^8.0.5",
     "babel-preset-minify": "^0.5.0",
+    "beatsaver-api": "^2.1.4",
     "css-loader": "^0.28.7",
     "debug": "^4.1.0",
     "html-require-loader": "^1.0.1",
@@ -65,7 +66,7 @@
     "webpack": "^4.29.5",
     "webpack-glsl-loader": "^1.0.1",
     "webpack-sources": "1.0.1",
-    "zip-loader": "github:ngokevin/ziploader#xhrdist"
+    "zip-loader": "^1.1.0"
   },
   "commented-out-dependencies": {
     "uglify-js": "github:mishoo/UglifyJS2#harmony",

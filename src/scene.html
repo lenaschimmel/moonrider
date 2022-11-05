@@ -15,7 +15,7 @@
   bind__song-preview-system="previewStartTime: menuSelectedChallenge.previewStartTime; selectedChallengeId: menuSelectedChallenge.id"
   bind__stage-colors="colorScheme: colorScheme"
   bind__tunnels="isPlaying: isPlaying; songDuration: challenge.songDuration"
-  bind__zip-loader="difficulties: menuDifficulties; isLoading: isLoading; version: menuSelectedChallenge.version"
+  bind__zip-loader="difficulties: menuDifficulties; isLoading: isLoading; version: menuSelectedChallenge.version; downloadUrl: menuSelectedChallenge.downloadURL"
   animation__gameover="property: object3D.background; type: color; to: #750000; startEvents: gameover"
   console-shortcuts
   debug-beat-generator
@@ -170,7 +170,7 @@
           controller="hand: {{ hand }}"
           data-hand="{{ hand }}"
           haptics="events: mouseenter; dur: 35; force: 0.075"
-          haptics__beat="events: beathaptic; dur: 90; force: 0.55"
+          haptics__beat="events: beathaptic; dur: 90; force: 0.99"
           haptics__draw="events: drawblade; dur: 750; force: 0.025"
           haptics__plume="events: plumepulse; dur: 35; force: 0.1"
           headfist="hand: {{ hand }}"

@@ -320,7 +320,7 @@ AFRAME.registerState({
         if ('getVRDisplays' in navigator) {
           navigator.getVRDisplays().then(displays => {
             if (!displays.length) { return; }
-            gtag('event', 'entervr', {event_label: displays[0].displayName});
+            //gtag('event', 'entervr', {event_label: displays[0].displayName});
             HAS_LOGGED_VR = true;
           });
         }
@@ -495,7 +495,7 @@ AFRAME.registerState({
         state.menuSelectedChallenge.difficulty = state.menuDifficulties[0];
       }
 
-      state.menuSelectedChallenge.image = utils.getS3FileUrl(id, 'image.jpg');
+      state.menuSelectedChallenge.image = utils.getImageUrl(challenge);
       updateMenuSongInfo(state, challenge);
 
       // Reset audio if it was able to prefetched by zip-loader before.
@@ -556,18 +556,18 @@ AFRAME.registerState({
     playbuttonclick: state => {
       if (badSongs[state.menuSelectedChallenge.id]) { return; }
 
-      let source = 'frontpage';
-      if (state.playlist) { source = 'playlist'; }
-      if (state.search.query) { source = 'search'; }
-      if (state.genre) { source = 'genre'; }
-      gtag('event', 'songsource', {event_label: source});
+      //let source = 'frontpage';
+      //if (state.playlist) { source = 'playlist'; }
+      //if (state.search.query) { source = 'search'; }
+      //if (state.genre) { source = 'genre'; }
+      //gtag('event', 'songsource', {event_label: source});
 
       resetScore(state);
 
       // Set challenge.
       Object.assign(state.challenge, state.menuSelectedChallenge);
       state.challenge.songNameShort = truncate(state.challenge.songName, 20);
-      gtag('event', 'difficulty', {event_label: state.challenge.difficulty});
+      //gtag('event', 'difficulty', {event_label: state.challenge.difficulty});
 
       // Reset menu.
       state.menuActive = false;
@@ -578,7 +578,7 @@ AFRAME.registerState({
       state.isLoading = true;
       state.loadingText = 'Loading...'
 
-      gtag('event', 'colorscheme', {event_label: state.colorScheme});
+      //gtag('event', 'colorscheme', {event_label: state.colorScheme});
     },
 
     playlistclear: (state, playlist) => {
@@ -647,7 +647,7 @@ AFRAME.registerState({
     },
 
     songcomplete: state => {
-      gtag('event', 'songcomplete', {event_label: state.gameMode});
+      //gtag('event', 'songcomplete', {event_label: state.gameMode});
 
       // Move back to menu in Ride or Viewer Mode.
       if (state.gameMode === 'ride' || !state.inVR) {
@@ -687,7 +687,8 @@ AFRAME.registerState({
       // Unset selected challenge.
       state.challenge.audio = '';
       state.challenge.id = '';
-      state.challenge.version = '';
+      //state.challenge.version = '';
+      console.log("prevented unset version in songloadcancel");
 
       state.isZipFetching = false;
       state.isLoading = false;
@@ -745,7 +746,8 @@ AFRAME.registerState({
     ziploaderend: (state, payload) => {
       state.challenge.audio = payload.audio;
       state.hasSongLoadError = false;
-      state.menuSelectedChallenge.version = '';
+      //state.menuSelectedChallenge.version = '';
+      console.log("prevented unset version in ziploaderend");
       state.isZipFetching = false;
     },
 

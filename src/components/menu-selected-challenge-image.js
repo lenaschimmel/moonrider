@@ -7,9 +7,14 @@ AFRAME.registerComponent('menu-selected-challenge-image', {
 
   update: function () {
     const el = this.el;
-    if (!this.data.selectedChallengeId) { return; }
-    el.setAttribute(
-      'material', 'src',
-      utils.getS3FileUrl(this.data.selectedChallengeId, 'image.jpg'));
+    if (!this.data.selectedChallengeId) { 
+      return; 
+    }
+    // Copy from challenge store populated from search results.
+    let challenge = state.menuSelectedChallenge;
+    try {
+      el.setAttribute('material', 'src', utils.getImageUrl(challenge));
+    } catch(e) {
+    }
   }
 });

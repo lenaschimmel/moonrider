@@ -26,7 +26,8 @@ AFRAME.registerComponent('super-keyboard', {
     filters: {type: 'array'},
     // roboto aileronsemibold dejavu exo2bold exo2semibold kelsonsans monoid sourcecodepro
     font: {default: 'aileronsemibold'},
-    hand: {type: 'selector'},
+    handHand: {type: 'selector'},
+    handCursor: {type: 'selector'},
     imagePath: {default: '.'},
     injectToRaycasterObjects: {default: true},
     inputColor: {type: 'color', default: '#6699ff'},
@@ -334,9 +335,14 @@ AFRAME.registerComponent('super-keyboard', {
     if (this.hand && this.hand.ownRaycaster) {
       this.hand.removeAttribute('raycaster');
     }
-    if (this.data.hand) {
-      this.hand = this.data.hand;
+
+    if (AFRAME.utils.getUrlParameter('kbtest')) {
+      this.hand = this.data.handCursor;
     } else {
+      this.hand = this.data.handHand;
+    }
+
+    if (!this.hand) {
       this.hand = document.querySelector([
         '[cursor]',
         '[vive-controls]',

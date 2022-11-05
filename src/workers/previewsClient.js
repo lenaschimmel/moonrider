@@ -1,13 +1,10 @@
 var window = self;
 
-import ZipLoader from 'zip-loader';
-
 const difficulties = [];
-
-const xhrs = {};
 
 // Fetch and unzip.
 addEventListener('message', function (evt) {
+  console.log("zip.js gets data: ", evt.data);
   const difficulties = JSON.parse(evt.data.difficulties);
   const version = evt.data.version;
 

@@ -24,7 +24,8 @@ module.exports = {
   },
   entry: {
     build: './src/index.js',
-    zip: './src/workers/zip.js'
+    previews: './src/workers/previewsClient.js',
+    zip: './src/workers/zipClient.js'
   },
   output: {
     globalObject: 'this',

@@ -2,7 +2,8 @@ AFRAME.registerComponent('zip-loader', {
   schema: {
     difficulties: {type: 'array'},
     isLoading: {default: 'false'},
-    version: {type: 'string'}  // e.g., 811-535.
+    version: {type: 'string'},  // e.g., 811-535.
+    downloadUrl: {type: 'string'} // points to an actual zip
   },
 
   init: function () {
@@ -13,9 +14,14 @@ AFRAME.registerComponent('zip-loader', {
     this.cachedVersion = null;
 
     this.message = {};
-    this.worker = new Worker('build/zip.js');
-    this.worker.onmessage = this.onMessage.bind(this);
-    this.worker.onerror = console.error;
+
+    this.zipWorker = new Worker('build/zip.js');
+    this.zipWorker.onmessage = this.onMessage.bind(this);
+    this.zipWorker.onerror = console.error;
+
+    this.previewsWorker = new Worker('build/previews.js');
+    this.previewsWorker.onmessage = this.onMessage.bind(this);
+    this.previewsWorker.onerror = console.error;
   },
 
   update: function (oldData) {
@@ -27,13 +33,21 @@ AFRAME.registerComponent('zip-loader', {
       this.message.abort = true;
       this.message.difficulties = JSON.stringify(this.data.difficulties);
       this.message.version = oldData.version;
-      this.worker.postMessage(this.message);  // Start the worker.
+      this.zipWorker.postMessage(this.message);  // Start the worker.
     }
 
+    // load actual zip
+    if (data.downloadUrl && oldData.downloadUrl !== data.downloadUrl) {
+      this.cachedVersion = null;
+      this.cachedZip = null;
+      this.fetchZip(data.downloadUrl);
+    }
+
+    // load pseudo-zip from previews server
     if (data.version && oldData.version !== data.version) {
       this.cachedVersion = null;
       this.cachedZip = null;
-      this.fetchZip(data.version);
+      this.fetchPseudoZip(data.version);
     }
 
     // Faulty ZIP.
@@ -44,7 +58,26 @@ AFRAME.registerComponent('zip-loader', {
     }
   },
 
-  fetchZip: function (version) {
+  fetchZip: function (url) {
+    this.el.emit('ziploaderstart', null, false);
+    if (this.cachedVersion === url) {
+      // Faulty ZIP.
+      if (!this.cachedZip) {
+        this.el.emit('songloaderror');
+        return;
+      }
+
+      this.el.emit('ziploaderend', this.cachedZip, false);
+      return;
+    }
+
+    this.message.abort = false;
+    this.message.difficulties = JSON.stringify(this.data.difficulties);
+    this.message.url = url;
+    this.zipWorker.postMessage(this.message);  // Start the worker.
+  },
+
+  fetchPseudoZip: function (version) {
     this.el.emit('ziploaderstart', null, false);
     if (this.cachedVersion === version) {
       // Faulty ZIP.
@@ -60,7 +93,7 @@ AFRAME.registerComponent('zip-loader', {
     this.message.abort = false;
     this.message.difficulties = JSON.stringify(this.data.difficulties);
     this.message.version = version;
-    this.worker.postMessage(this.message);  // Start the worker.
+    this.previewsWorker.postMessage(this.message);  // Start the worker.
   },
 
   onMessage: function (evt) {
@@ -93,7 +126,7 @@ AFRAME.registerComponent('zip-loader', {
         }
 
         // Check version still matches in case selected challenge changed.
-        if (evt.data.version === this.data.version) {
+        if (evt.data.version === this.data.version || evt.data.version === this.data.downloadUrl) {
           this.el.emit('ziploaderend', evt.data.data, false);
         }
         break;

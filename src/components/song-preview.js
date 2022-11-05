@@ -22,7 +22,10 @@ AFRAME.registerComponent('song-preview-system', {
     this.audio.pause();
 
     if (data.selectedChallengeId && oldData.selectedChallengeId !== data.selectedChallengeId) {
-      this.audio.setAttribute('src', utils.getS3FileUrl(data.selectedChallengeId, 'song.ogg'));
+      // Copy from challenge store populated from search results.
+      let challenge = state.menuSelectedChallenge;
+      let audioUrl = utils.getAudioUrl(challenge);
+      this.audio.setAttribute('src', audioUrl);
       this.audio.currentTime = data.previewStartTime;
       this.audio.play();
     }

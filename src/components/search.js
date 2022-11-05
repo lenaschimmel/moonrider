@@ -1,6 +1,12 @@
 const algoliasearch = require('algoliasearch/lite');
 const debounce = require('lodash.debounce');
 
+const BeatSaverAPI = require('beatsaver-api');
+const beatsaver = new BeatSaverAPI({
+  AppName: 'Lenas moonrider',
+  Version: '0.1.0'
+});
+
 const client = algoliasearch('QULTOY3ZWU', 'be07164192471df7e97e6fa70c1d041d');
 const algolia = client.initIndex('beatsaver');
 
@@ -64,6 +70,7 @@ AFRAME.registerComponent('search', {
         !this.data.playlist && this.popularHits) {
       this.eventDetail.results = this.popularHits;
       this.eventDetail.query = '';
+      console.log("about to emit searchresult: ", this.eventDetail);
       this.el.sceneEl.emit('searchresults', this.eventDetail);
       return;
     }
@@ -106,18 +113,88 @@ AFRAME.registerComponent('search', {
 
     if (query && query.length < 3) { return; }
 
-    algolia.search(this.queryObject, (err, content) => {
-      if (err) {
-        this.el.sceneEl.emit('searcherror', null, false);
-        console.error(err);
-        return;
+    const maps = [];
+    this.eventDetail.results = maps;
+    this.el.sceneEl.emit('searchresults', this.eventDetail);
+    this.performSearch(query, 0);
+  },
+
+  performSearch: function(query, page) {
+    const searchPromise = beatsaver.searchMaps({
+      sortOrder: 'Rating',
+      q: query
+    }, page);
+  
+    const queryLc = query.toLowerCase();
+  
+    searchPromise.then(response => {
+      console.log("beatsaver results: ", response.docs);
+      const maps = response.docs.filter(map =>
+          map.metadata.songAuthorName.toLowerCase().includes(queryLc) ||
+          map.metadata.songName.toLowerCase().includes(queryLc) ||
+          map.metadata.songSubName.toLowerCase().includes(queryLc)
+      );
+  
+      for (let map of maps) {
+        map.songName = map.metadata.songName;
+        map.songSubName = map.metadata.songAuthorName || map.metadata.songSubName;
+        if (map.metadata.songAuthorName && map.metadata.songSubName) {
+          map.songSubName = map.metadata.songAuthorName + " - " + map.metadata.songSubName;
+        }
+        map.bpm = map.metadata.bpm;
+        map.author = map.metadata.levelAuthorName;
+        map.songDuration = map.metadata.duration;
+  
+        map.difficulties = [];
+        map.numBeats = {};
+  
+        let latestVersion = map.versions[map.versions.length - 1];
+  
+        map.key = latestVersion.key;
+        map.coverURL = latestVersion.coverURL;
+        map.previewURL = latestVersion.previewURL;
+        map.downloadURL = latestVersion.downloadURL;
+  
+        for (let diff of latestVersion.diffs) {
+          map.difficulties.push(diff.difficulty);
+          map.numBeats[diff.difficulty] = diff.notes;
+        }
+      }
+      this.eventDetail.results.push(...maps);
+
+      let boolCompare = function(a, b) {
+        if(a && !b) {
+          return -1;
+        }
+        if(!a && b) {
+          return 1;
+        }
+        return 0;
       }
 
-      this.eventDetail.results = content.hits;
+      // Exact artist matches first
+      // Then partial artist matches
+      // Then unmatching artists
+      // Within each artist, sort by song name
+      this.eventDetail.results.sort((a,b) => (
+        boolCompare(a.songSubName.toLowerCase() == queryLc, b.songSubName.toLowerCase() == queryLc) ||
+        boolCompare(a.songSubName.toLowerCase().includes(queryLc), b.songSubName.toLowerCase().includes(queryLc)) ||
+        ("" + a.songSubName.toLowerCase()).localeCompare(b.songSubName.toLowerCase()) || 
+        ("" + a.songName.toLowerCase()).localeCompare(b.songName.toLowerCase())
+      ));
 
+      console.log("cleaned up beatsaver results: ", this.eventDetail.results);
       this.el.sceneEl.emit('searchresults', this.eventDetail);
+
+      if (response.docs.length == 20 && page < 5) {
+        this.performSearch(query, page + 1);
+      }
+    }).catch(error => {
+      this.el.sceneEl.emit('searcherror', null, false);
+      console.error(error);
+      return;
     });
-  }
+  }  
 });
 
 /**
