@@ -68,7 +68,6 @@ AFRAME.registerComponent('search', {
         !this.data.playlist && this.popularHits) {
       this.eventDetail.results = this.popularHits;
       this.eventDetail.query = '';
-      console.log("about to emit searchresult: ", this.eventDetail);
       this.el.sceneEl.emit('searchresults', this.eventDetail);
       return;
     }
@@ -126,7 +125,6 @@ AFRAME.registerComponent('search', {
     const queryLc = query.toLowerCase();
   
     searchPromise.then(response => {
-      console.log("beatsaver results: ", response.docs);
       const maps = response.docs.filter(map =>
           map.metadata.songAuthorName.toLowerCase().includes(queryLc) ||
           map.metadata.songName.toLowerCase().includes(queryLc) ||
@@ -181,7 +179,6 @@ AFRAME.registerComponent('search', {
         ("" + a.songName.toLowerCase()).localeCompare(b.songName.toLowerCase())
       ));
 
-      console.log("cleaned up beatsaver results: ", this.eventDetail.results);
       this.el.sceneEl.emit('searchresults', this.eventDetail);
 
       if (response.docs.length == 20 && page < 5) {
