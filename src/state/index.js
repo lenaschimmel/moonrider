@@ -696,6 +696,7 @@ AFRAME.registerState({
       state.challenge.id = '';
       //state.challenge.version = '';
       console.log("prevented unset version in songloadcancel");
+      //console.log(state);
 
       state.isZipFetching = false;
       state.isLoading = false;

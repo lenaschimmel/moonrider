@@ -1,5 +1,7 @@
 var window = self;
 
+// that `zip-loader` is the npm module and has nothing to do with our 
+// `zip-loader.js` which loads this worker and sends messages to it.
 import ZipLoader from 'zip-loader';
 const difficulties = [];
 const xhrs = {};
@@ -10,7 +12,9 @@ addEventListener('message', function (evt) {
 
   // Abort.
   if (evt.data.abort && xhrs[url]) {
+    console.log("Try to abort xhrs for " + url);
     xhrs[url].abort();
+    console.log("Succeeded to abort xhrs for " + url);
     delete xhrs[url];
     return;
   }
@@ -61,6 +65,9 @@ addEventListener('message', function (evt) {
         }
     }
 
+    console.log("Found difficulties in info: ", difficulties);
+    console.log("Found filenames in info: ", diffForFilename);
+
     // Extract files needed (beats and image).
     Object.keys(loader.files).forEach(filename => {
       let filenameLc = filename.toLowerCase();
@@ -68,15 +75,18 @@ addEventListener('message', function (evt) {
         let difficulty = difficulties[i];
         if (filenameLc.endsWith(`${difficulty.toLowerCase()}.json`)) {
           data.beats[difficulty] = loader.extractAsJSON(filename);
+          console.log("Loaded difficulty " + difficulty + " via name pattern matching.");
         }
-        if (diffForFilename[filenameLc]) {
+        if (diffForFilename[filenameLc] == difficulty) {
             data.beats[diffForFilename[filenameLc]] = loader.extractAsJSON(filename);
             data.beats[diffForFilename[filenameLc]]._beatsPerMinute = info._beatsPerMinute;
+            console.log("Loaded difficulty " + difficulty + " via mapped name.");
         }
       }
 
       if (filenameLc.endsWith('.ogg') || filenameLc.endsWith('.egg')) {
         data.audio = loader.extractAsBlobUrl(filename, 'audio/ogg');
+        console.log("Loaded audio");
       }
     });
 

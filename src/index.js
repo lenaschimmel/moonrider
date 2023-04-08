@@ -33,6 +33,18 @@ require('./scene.html');
 
 if (module.hot) { module.hot.accept(); }
 
+const alreadyListenedEventTypes = [];
+
+const dispatchEvent_original = EventTarget.prototype.dispatchEvent;
+EventTarget.prototype.dispatchEvent = function (event) {
+  //console.log("DISPATCH ", event.type);
+    // if (event.target && !alreadyListenedEventTypes.includes(event.type)) {
+    //     event.target.addEventListener(event.type, listener, ...otherArguments);
+    //     alreadyListenedEventTypes.push(event.type);
+    // }
+    dispatchEvent_original.apply(this, arguments);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   initSubscribeForm();
 });
