@@ -66,6 +66,37 @@ const SIZES = {
   [RIDE]: 0.4
 };
 
+var websocket = null;
+var websocketUsable = false;
+var beatCounter = 0;
+
+setInterval(() => {
+  if(websocket == null) {
+    websocket = new WebSocket("ws://172.16.218.14:8765");
+    websocket.addEventListener("open", (event) => {
+      websocketUsable = true;
+      sendMessage({
+        type: "connect",
+      });
+      console.warn("Websocket opened.");
+    });
+    websocket.addEventListener("close", (event) => {
+      websocketUsable = false;
+      websocket = null;
+      console.warn("Websocket closed.");
+    });
+  }
+},
+1000);
+
+function sendMessage(object) {
+  console.log("Message: ", object);
+  if(websocket != null && object != null && websocketUsable) {
+    websocket.send(JSON.stringify(object));
+  }
+}
+
+
 AFRAME.registerComponent('beat-system', {
   schema: {
     gameMode: {default: 'classic', oneOf: ['classic', 'punch', 'ride']},
@@ -87,7 +118,7 @@ AFRAME.registerComponent('beat-system', {
     this.punchEls = this.el.sceneEl.querySelectorAll('a-entity[punch]');
     this.curveEl = document.getElementById('curve');
     this.size = SIZES[this.data.gameMode];
-    this.supercurveFollow = null;
+    this.supercurveFollow = null;    
   },
 
   play: function () {
@@ -365,6 +396,29 @@ AFRAME.registerComponent('beat', {
     const data = this.data;
     const el = this.el;
 
+    this.beatId = beatCounter++;
+
+    console.log("cutDirection", cutDirection);
+
+    let obj = {
+      type: "beatNew",
+      beatId: this.beatId,
+      timestamp: songPosition,
+      horizontalPosition: this.horizontalPositions ? this.horizontalPositions[horizontalPosition] : 0,
+      verticalPosition: this.verticalPositions ? this.verticalPositions[verticalPosition] : 0,
+      heightOffset,
+      color: this.data.color,
+    };
+
+    if (cutDirection) {
+      obj.cutDirection = [
+        CUT_DIRECTION_VECTORS[cutDirection].x, 
+        CUT_DIRECTION_VECTORS[cutDirection].y, 
+      ];
+    }
+
+    sendMessage(obj);
+
     this.beatSystem.registerBeat(this);
 
     // Model is 0.29 size. We make it 1.0 so we can easily scale based on 1m size.
@@ -437,14 +491,30 @@ AFRAME.registerComponent('beat', {
   wrongHit: function () {
     this.destroyed = true;
     this.queueBeatWrongEvent = true;
+
+    sendMessage({
+      type: "beatWrong",
+      beatId: this.beatId,
+    });
   },
 
   missHit: function () {
     if (this.data.type === MINE) { return; }
     this.el.sceneEl.emit('beatmiss', null, true);
+    sendMessage({
+      type: "beatMiss",
+      beatId: this.beatId,
+    });
   },
 
   destroyBeat: function (weaponEl, correctHit) {
+    if(websocket) {
+      sendMessage({
+        type: "beatHit",
+        beatId: this.beatId,
+      });
+    }
+
     const data = this.data;
     const explodeEventDetail = this.explodeEventDetail;
     const rig = this.rigContainer.object3D;

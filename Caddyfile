@@ -1,3 +1,6 @@
-https://192.168.0.2:3003
-
-reverse_proxy http://192.168.0.2:3000
+https://172.16.218.128:777 {
+	handle_path /* {
+		root * /Users/lena/src/moonrider/ghpages
+		file_server browse
+	}
+}
