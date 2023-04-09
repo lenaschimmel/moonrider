@@ -404,16 +404,15 @@ AFRAME.registerComponent('beat', {
       type: "beatNew",
       beatId: this.beatId,
       timestamp: songPosition,
-      horizontalPosition: this.horizontalPositions ? this.horizontalPositions[horizontalPosition] : 0,
-      verticalPosition: this.verticalPositions ? this.verticalPositions[verticalPosition] : 0,
-      heightOffset,
+      horizontalPosition,
+      verticalPosition,
       color: this.data.color,
     };
 
     if (cutDirection) {
       obj.cutDirection = [
-        CUT_DIRECTION_VECTORS[cutDirection].x, 
-        CUT_DIRECTION_VECTORS[cutDirection].y, 
+        CUT_DIRECTION_VECTORS[cutDirection].x,
+        CUT_DIRECTION_VECTORS[cutDirection].y,
       ];
     }
 
