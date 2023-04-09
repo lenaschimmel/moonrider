@@ -7,6 +7,8 @@ const LAYER_MIDDLE = 'middle';
 const LAYER_TOP = 'top';
 const VOLUME = 0.185;
 
+const usePanner = true;
+
 /**
  * Beat hit sound using positional audio and audio buffer source.
  */
@@ -44,8 +46,6 @@ AFRAME.registerComponent('beat-hit-sound', {
     const rand = 1 + Math.floor(Math.random() * 10);
     const dir = this.directionsToSounds[cutDirection || 'up'];
     const soundName = `hitSound${rand}${dir}`;
-    console.log("Play sound", this.sounds, soundName);
-
     var source = context.createBufferSource();
     source.buffer = this.sounds[soundName];
     let layer = this.getLayer(position.y)
@@ -56,9 +56,25 @@ AFRAME.registerComponent('beat-hit-sound', {
     }
     source.playbackRate.value += Math.random() * 0.075;
 
-    const gainNode = context.createGain();
-    gainNode.gain.value = 0.3;
-    source.connect(gainNode).connect(context.destination);
+    if (usePanner) {
+      const panner = context.createPanner();
+      panner.panningModel = "HRTF";
+      panner.distanceModel = "inverse";
+      panner.refDistance = 1;
+      panner.maxDistance = 3;
+      panner.rolloffFactor = 1;
+      panner.coneInnerAngle = 360;
+      panner.coneOuterAngle = 0;
+      panner.coneOuterGain = 0;
+      panner.positionX.value = position.x;
+      panner.positionY.value = position.y;
+      panner.positionZ.value = 0; // position.z; // value is moving along the track
+      source.connect(panner).connect(context.destination);
+    } else {
+      const gainNode = context.createGain();
+      gainNode.gain.value = 0.3;
+      source.connect(gainNode).connect(context.destination);
+    }
 
     source.start(0);
   },

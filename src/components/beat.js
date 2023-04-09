@@ -18,7 +18,7 @@ const ONCE = {once: true};
 const DESTROY_TIME = 1000;
 
 // Play sound and explode at reach to test sync.
-const SYNC_TEST = !!AFRAME.utils.getUrlParameter('synctest');
+const SYNC_TEST = true; // !!AFRAME.utils.getUrlParameter('synctest');
 const syncTestObject3D = new THREE.Object3D();
 const syncTestVector3 = new THREE.Vector3();
 
@@ -90,7 +90,6 @@ setInterval(() => {
 1000);
 
 function sendMessage(object) {
-  console.log("Message: ", object);
   if(websocket != null && object != null && websocketUsable) {
     websocket.send(JSON.stringify(object));
   }
@@ -398,8 +397,6 @@ AFRAME.registerComponent('beat', {
 
     this.beatId = beatCounter++;
 
-    console.log("cutDirection", cutDirection);
-
     let obj = {
       type: "beatNew",
       beatId: this.beatId,
@@ -572,7 +569,7 @@ AFRAME.registerComponent('beat', {
     }
 
     // Sound.
-    this.el.parentNode.components['beat-hit-sound'].playSound(this.el, this.cutDirection);
+    this.el.parentNode.components['beat-hit-sound'].playSound(this.el, this.el.object3D.position, this.cutDirection);
 
     if (wrongHit) {
       this.wrongHit();
@@ -691,7 +688,7 @@ AFRAME.registerComponent('beat', {
   autoHit: function (weaponEl) {
     const el = this.el;
     this.destroyBeat(weaponEl, Math.random() < 0.9);
-    el.parentNode.components['beat-hit-sound'].playSound(el, this.cutDirection);
+    el.parentNode.components['beat-hit-sound'].playSound(el, this.el.object3D.position, this.cutDirection);
     const hitEventDetail = this.hitEventDetail;
     hitEventDetail.percent = 100;
     hitEventDetail.score = 100;
