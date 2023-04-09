@@ -1,3 +1,5 @@
+import { loadSounds, context } from '../lib/BufferLoader'
+
 var sourceCreatedCallback;
 
 const LAYER_BOTTOM = 'bottom';
@@ -21,64 +23,51 @@ AFRAME.registerComponent('beat-hit-sound', {
   },
 
   init: function () {
-    this.currentBeatEl = null;
-    this.currentCutDirection = '';
-    this.processSound = this.processSound.bind(this);
-    sourceCreatedCallback = this.sourceCreatedCallback.bind(this);
+    this.context = new AudioContext();
+    this.sounds = [];
 
-    // Sound pools.
+    let soundSources = {};
     for (let i = 1; i <= 10; i++) {
-      this.el.setAttribute(`sound__beathit${i}`, {
-        poolSize: 8,
-        positional: false,
-        src: `#hitSound${i}`,
-        volume: VOLUME
-      });
-      this.el.setAttribute(`sound__beathit${i}left`, {
-        poolSize: 8,
-        positional: false,
-        src: `#hitSound${i}left`,
-        volume: VOLUME
-      });
-      this.el.setAttribute(`sound__beathit${i}right`, {
-        poolSize: 8,
-        positional: false,
-        src: `#hitSound${i}right`,
-        volume: VOLUME
-      });
+      soundSources[`hitSound${i}`] = `/assets/sounds/hit${i}.ogg`;
+      soundSources[`hitSound${i}left`] = `/assets/sounds/hit${i}left.ogg`;
+      soundSources[`hitSound${i}right`] = `/assets/sounds/hit${i}right.ogg`;
     }
+
+    loadSounds(this.sounds, soundSources, () => { console.log("loadSounds finished"); });
   },
 
   play: function () {
-    // Kick three.js loader...Don't know why sometimes doesn't load.
-    for (let i = 1; i <= 10; i++) {
-      if (!this.el.components[`sound__beathit${i}`].loaded) {
-        this.el.setAttribute(`sound__beathit${i}`, 'src', '');
-        this.el.setAttribute(`sound__beathit${i}`, 'src', `#hitSound${i}`);
-      }
-      if (!this.el.components[`sound__beathit${i}left`].loaded) {
-        this.el.setAttribute(`sound__beathit${i}left`, 'src', '');
-        this.el.setAttribute(`sound__beathit${i}left`, 'src', `#hitSound${i}left`);
-      }
-      if (!this.el.components[`sound__beathit${i}right`].loaded) {
-        this.el.setAttribute(`sound__beathit${i}right`, 'src', '');
-        this.el.setAttribute(`sound__beathit${i}right`, 'src', `#hitSound${i}right`);
-      }
-    }
+    // nothing to do here
   },
 
   playSound: function (beatEl, position, cutDirection) {
     const rand = 1 + Math.floor(Math.random() * 10);
     const dir = this.directionsToSounds[cutDirection || 'up'];
-    const soundPool = this.el.components[`sound__beathit${rand}${dir}`];
-    soundPool.playSound(this.processSound);
+    const soundName = `hitSound${rand}${dir}`;
+    console.log("Play sound", this.sounds, soundName);
+
+    var source = context.createBufferSource();
+    source.buffer = this.sounds[soundName];
+    let layer = this.getLayer(position.y)
+    if (layer === LAYER_BOTTOM) {
+      source.playbackRate.value = 0.8;
+    } else if (layer === LAYER_TOP) {
+      source.playbackRate.value = 1.2;
+    }
+    source.playbackRate.value += Math.random() * 0.075;
+
+    const gainNode = context.createGain();
+    gainNode.gain.value = 0.3;
+    source.connect(gainNode).connect(context.destination);
+
+    source.start(0);
   },
 
   /**
    * Set audio stuff before playing.
    */
   processSound: function (audio) {
-    audio.detune = 0;
+    //audio.detune = 0;
   },
 
   /**
@@ -86,21 +75,21 @@ AFRAME.registerComponent('beat-hit-sound', {
    * Set detune for pitch and inflections.
    */
   sourceCreatedCallback: function (source) {
-    // Pitch based on layer.
-    const layer = this.getLayer(this.currentBeatEl.object3D.position.y);
-    if (layer === LAYER_BOTTOM) {
-      source.detune.setValueAtTime(-400, 0);
-    } else if (layer === LAYER_TOP) {
-      source.detune.setValueAtTime(200, 0);
-    }
+    // // Pitch based on layer.
+    // const layer = this.getLayer(this.currentBeatEl.object3D.position.y);
+    // if (layer === LAYER_BOTTOM) {
+    //   source.detune.setValueAtTime(-400, 0);
+    // } else if (layer === LAYER_TOP) {
+    //   source.detune.setValueAtTime(200, 0);
+    // }
 
-    // Inflection on strike down or up.
-    if (this.currentCutDirection === 'down') {
-      source.detune.linearRampToValueAtTime(-400, 1);
-    }
-    if (this.currentCutDirection === 'up') {
-      source.detune.linearRampToValueAtTime(400, 1);
-    }
+    // // Inflection on strike down or up.
+    // if (this.currentCutDirection === 'down') {
+    //   source.detune.linearRampToValueAtTime(-400, 1);
+    // }
+    // if (this.currentCutDirection === 'up') {
+    //   source.detune.linearRampToValueAtTime(400, 1);
+    // }
 	},
 
   /**
