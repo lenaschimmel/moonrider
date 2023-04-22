@@ -1,4 +1,5 @@
 const BASE_URL = 'https://previews.moonrider.xyz';
+const coverImageCorsProxy = 'https://beatproxy.b-cdn.net/';
 
 function getS3FileUrl (id, name) {
   return `${BASE_URL}/${id}-${name}?v=2`;
@@ -6,8 +7,10 @@ function getS3FileUrl (id, name) {
 module.exports.getS3FileUrl = getS3FileUrl;
 
 function getImageUrl(result) {
+  console.log("getImageUrl", result);
   if (result.coverURL) {
-    return result.coverURL.replace("https://eu.cdn.beatsaver.com","https://192.168.0.2:9009");
+    //return coverImageCorsProxy + src['versions'][0]['coverURL'].split('/')[3];
+    return result.coverURL.replace("https://eu.cdn.beatsaver.com/","https://beatproxy.b-cdn.net/");
   } else {
     return getS3FileUrl(result.id, 'image.jpg');
   }

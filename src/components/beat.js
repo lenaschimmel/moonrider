@@ -18,7 +18,7 @@ const ONCE = {once: true};
 const DESTROY_TIME = 1000;
 
 // Play sound and explode at reach to test sync.
-const SYNC_TEST = true; // !!AFRAME.utils.getUrlParameter('synctest');
+const SYNC_TEST = !!AFRAME.utils.getUrlParameter('synctest');
 const syncTestObject3D = new THREE.Object3D();
 const syncTestVector3 = new THREE.Vector3();
 
@@ -72,8 +72,8 @@ var beatCounter = 0;
 
 setInterval(() => {
   if(websocket == null) {
-    websocket = new WebSocket("ws://172.16.218.14:8765");
-    websocket.addEventListener("open", (event) => {
+    //websocket = new WebSocket("wss://172.16.218.128:8765"); // lena
+    cket.addEventListener("open", (event) => {
       websocketUsable = true;
       sendMessage({
         type: "connect",
@@ -85,6 +85,8 @@ setInterval(() => {
       websocket = null;
       console.warn("Websocket closed.");
     });
+  } else {
+    console.log("Websocket is...ok? I guess? Is it?!?!");
   }
 },
 1000);
@@ -116,8 +118,10 @@ AFRAME.registerComponent('beat-system', {
     this.curveFollowRig = document.getElementById('curveFollowRig');
     this.punchEls = this.el.sceneEl.querySelectorAll('a-entity[punch]');
     this.curveEl = document.getElementById('curve');
+    this.rigContainer = document.getElementById('rigContainer');
     this.size = SIZES[this.data.gameMode];
-    this.supercurveFollow = null;    
+    this.supercurveFollow = null;
+    this.lastBladeTime = 0;
   },
 
   play: function () {
@@ -179,6 +183,26 @@ AFRAME.registerComponent('beat-system', {
     // Update bounding boxes and velocities.
     this.weapons[0].tickBeatSystem(t, dt);
     this.weapons[1].tickBeatSystem(t, dt);
+
+    const now = performance.now()
+    //console.log("now", now, "this.lastBladeTime", this.lastBladeTime);
+    if(this.rigContainer && now > this.lastBladeTime + 60 && this.weapons && this.weapons[0] && this.weapons[0].bladeWorldPositions) {
+      this.lastBladeTime = now;
+      const rig = this.rigContainer.object3D;
+
+      // send updated blade positions
+      sendMessage({
+        type: "bladePositions",
+        blade1: {
+          tip: rig.worldToLocal(this.weapons[0].bladeWorldPositions[0]),
+          handle: rig.worldToLocal(this.weapons[0].bladeWorldPositions[1]),
+        },
+        blade2: {
+          tip: rig.worldToLocal(this.weapons[1].bladeWorldPositions[0]),
+          handle: rig.worldToLocal(this.weapons[1].bladeWorldPositions[1]),
+        }
+      });
+    }
 
     // No beats to check means to collision to check.
     if (!beatsToCheck.length) { return; }
@@ -568,8 +592,13 @@ AFRAME.registerComponent('beat', {
       console.log(err);
     }
 
-    // Sound.
-    this.el.parentNode.components['beat-hit-sound'].playSound(this.el, this.el.object3D.position, this.cutDirection);
+    // Sound
+    let soundSystem = this.el.parentNode.components['beat-hit-sound'];
+    const rig = this.rigContainer.object3D;
+    //soundSystem.setListener(this.el.sceneEl.camera.el.object3D);
+   
+    let localPos = rig.worldToLocal(this.el.object3D.position)
+    soundSystem.playSound(this.el, localPos, this.cutDirection);
 
     if (wrongHit) {
       this.wrongHit();
@@ -687,8 +716,11 @@ AFRAME.registerComponent('beat', {
    */
   autoHit: function (weaponEl) {
     const el = this.el;
+    const rig = this.rigContainer.object3D;
     this.destroyBeat(weaponEl, Math.random() < 0.9);
-    el.parentNode.components['beat-hit-sound'].playSound(el, this.el.object3D.position, this.cutDirection);
+    let soundSystem = el.parentNode.components['beat-hit-sound'];
+    let localPos = rig.worldToLocal(this.el.object3D.position)
+    soundSystem.playSound(el, localPos, this.cutDirection);
     const hitEventDetail = this.hitEventDetail;
     hitEventDetail.percent = 100;
     hitEventDetail.score = 100;

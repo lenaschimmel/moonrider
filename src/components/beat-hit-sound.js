@@ -68,7 +68,7 @@ AFRAME.registerComponent('beat-hit-sound', {
       panner.coneOuterGain = 0;
       panner.positionX.value = position.x;
       panner.positionY.value = position.y;
-      panner.positionZ.value = 0; // position.z; // value is moving along the track
+      panner.positionZ.value = position.z;
       source.connect(panner).connect(context.destination);
     } else {
       const gainNode = context.createGain();

@@ -1,6 +1,7 @@
 // Adapted from https://webaudioapi.com/static/js/shared.js
 // Which is a part of this book chapter: https://webaudioapi.com/book/Web_Audio_API_Boris_Smus_html/ch01.html#s01_8
 // from: Web Audio API by Boris Smus (O’Reilly). Copyright 2013 Boris Smus, 978-1-449-33268-6
+// Information about copyright: https://webaudioapi.com/book/Web_Audio_API_Boris_Smus_html/ch00.html#using-code-examples-gOsrUa
 
 // Start off by initializing a new context.
 export let context = new (window.AudioContext || window.webkitAudioContext)();
